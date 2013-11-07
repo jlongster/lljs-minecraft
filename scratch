@@ -1,0 +1,36 @@
+    for(var i=0; i<16*16*n; i++) {
+        var col = arr[256*3 - 16*16 + i];
+        var x = i % 16;
+        var y = (i / 16) | 0;
+
+        var r = (col >> 16) & 0xff;
+        var g = (col >> 8) & 0xff;
+        var b = col & 0xff;
+
+        var base = (x + y * 16) * 4;
+        pixels.data[base] = r;
+        pixels.data[base + 1] = g;
+        pixels.data[base + 2] = b;
+        pixels.data[base + 3] = 255;
+    }
+
+    ctx.putImageData(pixels, 0, 0);
+
+
+
+
+
+
+    // DEBUG 
+
+    // var ptr = minecraft.getMap();
+    // var arr = window.I4.subarray(ptr >> 2, (ptr >> 2) + 262144);
+
+    // for(var i=0; i<arr.length; i++) {
+    //     if(ref.map[i] !== undefined &&
+    //        ref.map[i] !== arr[i]) {
+    //         throw new Error('invalid [' + i + '] ' + ref.map[i] + ' != ' + arr[i]);
+    //     }
+    // }
+
+    // throw new Error('all good!');

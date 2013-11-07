@@ -1,0 +1,26 @@
+
+body {
+    margin: 0;
+}
+
+h4 {
+    margin: 0;
+    margin-bottom: .5em;
+}
+
+canvas {
+    image-rendering: optimizeSpeed;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: optimize-contrast;
+    -ms-interpolation-mode: nearest-neighbor;
+}
+
+.controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(30, 30, 30, .3);
+    margin: 1em;
+    padding: 1em;
+}

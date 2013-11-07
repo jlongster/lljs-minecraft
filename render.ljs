@@ -1,0 +1,228 @@
+
+extern random, now;
+
+let int map[262144]; // 64 * 64 * 64
+let int texmap[12288]; // 16 * 16 * 3 * 16
+let float PI = 3.14159265359;
+
+let int w = 0;
+let int h = 0;
+
+function void makeTexmap() {
+    for ( let int i = 1; i < 16; i++) {
+        let float br = 255 - int(float(random()) * 96.0);
+        for ( let int y = 0; y < 16 * 3; y++) {
+            for ( let int x = 0; x < 16; x++) {
+                let int color = 0x966C4A;
+                if (i == 4)
+                    color = 0x7F7F7F;
+                if (i != 4 || int(float(random()) * 3.0) == 0) {
+                    br = 255 - int(float(random()) * 96.0);
+                }
+                if ((i == 1 && y < (((x * x * 3 + x * 81) >> 2) & 3) + 18)) {
+                    color = 0x6AAA40;
+                } else if ((i == 1 && y < (((x * x * 3 + x * 81) >> 2) & 3) + 19)) {
+                    br = br * 2 / 3;
+                }
+                if (i == 7) {
+                    color = 0x675231;
+                  if (x > 0 && x < 15
+                      && ((y > 0 && y < 15) || (y > 32 && y < 47))) {
+                        color = 0xBC9862;
+                        let int xd = (x - 7);
+                        let int yd = ((y & 15) - 7);
+                        if (xd < 0)
+                            xd = 1 - xd;
+                        if (yd < 0)
+                            yd = 1 - yd;
+                        if (yd > xd)
+                            xd = yd;
+
+                        br = 196 - int(float(random()) * 32.0) + xd % 3 * 32;
+                    } else if (int(float(random()) * 2.0) == 0) {
+                        br = br * (150 - (x & 1) * 100) / 100;
+                    }
+                }
+
+                if (i == 5) {
+                    color = 0xB53A15;
+                    if ((x + (y >> 2) * 4) % 8 == 0 || y % 4 == 0) {
+                        color = 0xBCAFA5;
+                    }
+                }
+                if (i == 9) {
+                    color = 0x4040ff;
+                }
+                let float brr = br;
+                if (y >= 32)
+                    brr /= 2;
+
+                if (i == 8) {
+                    color = 0x50D937;
+                    if (int(float(random()) * 2.0) == 0) {
+                        color = 0;
+                        brr = 255;
+                    }
+                }
+
+                let int col = int(((color >> 16) & 0xff) * brr / 255) << 16
+                        | int(((color >> 8) & 0xff) * brr / 255) << 8
+                        | int(((color) & 0xff) * brr / 255);
+                texmap[x + y * 16 + i * 256 * 3] = col;
+            }
+        }
+    }
+}
+
+function void makeMap() {
+    for ( let int x = 0; x < 64; x++) {
+        for ( let int y = 0; y < 64; y++) {
+            for ( let int z = 0; z < 64; z++) {
+                let int i = z << 12 | y << 6 | x;
+                let float yd = (y - 32.5) * 0.4;
+                let float zd = (z - 32.5) * 0.4;
+                map[i] = int(float(random()) * 16);
+                if (float(random()) > sqrt(sqrt(yd * yd + zd * zd)) - 0.8)
+                    map[i] = 0;
+            }
+        }
+    }
+}
+
+let int f = 0;
+let u8 pixels[20000000];
+let int pixelsLength = 0;
+
+function int render() {
+    let float xRot = sin(int(now()) % 10000 / float(10000) * PI * 2) * 0.4 + PI / 2;
+    let float yRot = cos(int(now()) % 10000 / float(10000) * PI * 2) * 0.4;
+    let float yCos = cos(yRot);
+    let float ySin = sin(yRot);
+    let float xCos = cos(xRot);
+    let float xSin = sin(xRot);
+
+    let float ox = 32.5 + int(now()) % 10000 / float(10000) * 64;
+    let float oy = 32.5;
+    let float oz = 32.5;
+
+    f = f + 1;
+    for ( let int x = 0; x < w; x++) {
+        let float ___xd = (x - w / 2) / float(h);
+        for ( let int y = 0; y < h; y++) {
+            let float __yd = (y - h / float(2)) / h;
+            let float __zd = 1;
+
+            let float ___zd = __zd * yCos + __yd * ySin;
+            let float _yd = __yd * yCos - __zd * ySin;
+
+            let float _xd = ___xd * xCos + ___zd * xSin;
+            let float _zd = ___zd * xCos - ___xd * xSin;
+
+            let int col = 0;
+            let float br = 255;
+            let float ddist = 0;
+
+            let float closest = 32;
+            for ( let int d = 0; d < 3; d++) {
+                let float dimLength = _xd;
+                if (d == 1)
+                    dimLength = _yd;
+                if (d == 2)
+                    dimLength = _zd;
+
+                let float ll = 1 / (dimLength < float(0) ? -dimLength : dimLength);
+                let float xd = (_xd) * ll;
+                let float yd = (_yd) * ll;
+                let float zd = (_zd) * ll;
+
+                let float initial = ox - int(ox);
+                if (d == 1)
+                    initial = oy - int(oy);
+                if (d == 2)
+                    initial = oz - int(oz);
+                if (dimLength > float(0))
+                    initial = 1 - initial;
+
+                let float dist = ll * initial;
+
+                let float xp = ox + xd * initial;
+                let float yp = oy + yd * initial;
+                let float zp = oz + zd * initial;
+
+                if (dimLength < float(0)) {
+                    if (d == 0)
+                        xp = xp - 1;
+                    if (d == 1)
+                        yp = yp - 1;
+                    if (d == 2)
+                        zp = zp - 1;
+                }
+
+                while (dist < closest) {
+                    let int tex = int(map[(int(zp) & 63) << 12 | (int(yp) & 63) << 6 | (int(xp) & 63)]);
+
+                    if (tex > 0) {
+                        let int u = int((xp + zp) * 16) & 15;
+                        let int v = (int(yp * 16) & 15) + 16;
+                        if (d == 1) {
+                            u = int(xp * 16) & 15;
+                            v = (int(zp * 16) & 15);
+                            if (yd < float(0))
+                                v += 32;
+                        }
+
+                        let int cc = int(texmap[u + v * 16 + tex * 256 * 3]);
+                        if (cc > 0) {
+                            col = cc;
+                            ddist = 255 - int(dist / 32 * 255);
+                            br = 255 * (255 - ((d + 2) % 3) * 50) / 255;
+                            closest = dist;
+                        }
+                    }
+                    xp += xd;
+                    yp += yd;
+                    zp += zd;
+                    dist += ll;
+                }
+            }
+
+            let int r = ((col >> 16) & 0xff) * br * ddist / (255 * 255);
+            let int g = ((col >> 8) & 0xff) * br * ddist / (255 * 255);
+            let int b = ((col) & 0xff) * br * ddist / (255 * 255);
+
+            pixels[(x + y * w) * 4 + 0] = r;
+            pixels[(x + y * w) * 4 + 1] = g;
+            pixels[(x + y * w) * 4 + 2] = b;
+            pixels[(x + y * w) * 4 + 3] = 255;
+        }
+    }
+
+    return int(pixels);
+}
+
+function int getPixelsLength() {
+    return pixelsLength;
+}
+
+function int getWidth() {
+    return w;
+}
+
+function int getHeight() {
+    return h;
+}
+
+function int init(int _w, int _h) {
+    w = _w;
+    h = _h;
+    pixelsLength = w * h * 4;
+
+    if(pixelsLength > 20000000) {
+        return 1;
+    }
+
+    makeTexmap();
+    makeMap();
+
+    return 0;
+}
