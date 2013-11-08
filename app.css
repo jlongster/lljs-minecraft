@@ -16,6 +16,12 @@ canvas {
     -ms-interpolation-mode: nearest-neighbor;
 }
 
+.note {
+    font-size: .75em;
+    text-align: center;
+    margin-top: 1em;
+}
+
 .controls {
     position: absolute;
     bottom: 0;

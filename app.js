@@ -32,6 +32,11 @@ function init() {
     stats.domElement.style.top = '0px';
     document.body.appendChild(stats.domElement);
 
+    var note = document.createElement('div');
+    note.innerHTML = 'note: above values are <strong>milliseconds per frame</strong>, not FPS';
+    note.className = 'note';
+    stats.domElement.appendChild(note);
+
     var canvas = document.getElementById('game');
     canvas.width = w;
     canvas.height = h;
