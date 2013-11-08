@@ -115,9 +115,11 @@ function render() {
     var xCos = Math.cos(rot.x);
     var xSin = Math.sin(rot.x);
 
-    var ox = 32.5 + Date.now() % 10000 / 10000 * 64;
-    var oy = 32.5;
-    var oz = 32.5;
+    var o = {
+        x: 32.5 + Date.now() % 10000 / 10000 * 64,
+        y: 32.5,
+        z: 32.5
+    };
 
     f++;
     for ( var x = 0; x < w; x++) {
@@ -146,24 +148,26 @@ function render() {
                     dimLength = _zd;
 
                 var ll = 1 / (dimLength < 0 ? -dimLength : dimLength);
-                var xd = (_xd) * ll;
-                var yd = (_yd) * ll;
-                var zd = (_zd) * ll;
+                var _d = {
+                    x: (_xd) * ll,
+                    y: (_yd) * ll,
+                    z: (_zd) * ll
+                };
 
-                var initial = ox - (ox | 0);
+                var initial = o.x - (o.x | 0);
                 if (d == 1)
-                    initial = oy - (oy | 0);
+                    initial = o.y - (o.y | 0);
                 if (d == 2)
-                    initial = oz - (oz | 0);
+                    initial = o.z - (o.z | 0);
                 if (dimLength > 0)
                     initial = 1 - initial;
 
                 var dist = ll * initial;
 
                 var p = { 
-                    x: ox + xd * initial,
-                    y: oy + yd * initial,
-                    z: oz + zd * initial
+                    x: o.x + _d.x * initial,
+                    y: o.y + _d.y * initial,
+                    z: o.z + _d.z * initial
                 };
 
                 if (dimLength < 0) {
@@ -184,7 +188,7 @@ function render() {
                         if (d == 1) {
                             u = (p.x * 16) & 15;
                             v = ((p.z * 16) & 15);
-                            if (yd < 0)
+                            if (_d.y < 0)
                                 v += 32;
                         }
 
@@ -197,9 +201,9 @@ function render() {
                         }
                     }
 
-                    p.x += xd;
-                    p.y += yd;
-                    p.z += zd;
+                    p.x += _d.x;
+                    p.y += _d.y;
+                    p.z += _d.z;
                     dist += ll;
                 }
                 //throw new Error(x + ' ' + y + ' ' + d + ': ' + cc);

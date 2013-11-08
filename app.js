@@ -38,8 +38,8 @@ function init() {
     stats.domElement.appendChild(note);
 
     var canvas = document.getElementById('game');
-    canvas.width = w;
-    canvas.height = h;
+    canvas.width = document.body.clientWidth;
+    canvas.height = document.body.clientHeight;
     renderer = new GLRenderer(canvas);
 
     if(renderer.unsupported) {

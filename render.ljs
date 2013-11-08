@@ -1,6 +1,16 @@
 
 extern random, now;
 
+struct Vec2d {
+    function void Vec2d(double x, double y) {
+        this->x = x;
+        this->y = y;
+    }
+
+    double x;
+    double y;
+}
+
 struct Vec3d {
     function void Vec3d(double x, double y, double z) {
         this->x = x;
@@ -113,9 +123,10 @@ function int render() {
     let float xCos = cos(xRot);
     let float xSin = sin(xRot);
 
-    let float ox = 32.5 + int(now()) % 10000 / float(10000) * 64;
-    let float oy = 32.5;
-    let float oz = 32.5;
+    let Vec3d o;
+    o.x = 32.5 + int(now()) % 10000 / float(10000) * 64;
+    o.y = 32.5;
+    o.z = 32.5;
 
     f = f + 1;
     for ( let int x = 0; x < w; x++) {
@@ -147,20 +158,20 @@ function int render() {
                 let float yd = (_yd) * ll;
                 let float zd = (_zd) * ll;
 
-                let float initial = ox - int(ox);
+                let float initial = o.x - int(o.x);
                 if (d == 1)
-                    initial = oy - int(oy);
+                    initial = o.y - int(o.y);
                 if (d == 2)
-                    initial = oz - int(oz);
+                    initial = o.z - int(o.z);
                 if (dimLength > float(0))
                     initial = 1 - initial;
 
                 let float dist = ll * initial;
 
                 let Vec3d p;
-                p.x = ox + xd * initial;
-                p.y = oy + yd * initial;
-                p.z = oz + zd * initial;
+                p.x = o.x + xd * initial;
+                p.y = o.y + yd * initial;
+                p.z = o.z + zd * initial;
 
                 if (dimLength < float(0)) {
                     if (d == 0)
