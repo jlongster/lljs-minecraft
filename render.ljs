@@ -1,6 +1,18 @@
 
 extern random, now;
 
+struct Vec3d {
+    function void Vec3d(double x, double y, double z) {
+        this->x = x;
+        this->y = y;
+        this->z = z;
+    }
+
+    double x;
+    double y;
+    double z;
+}
+
 let int map[262144]; // 64 * 64 * 64
 let int texmap[12288]; // 16 * 16 * 3 * 16
 let float PI = 3.14159265359;
@@ -145,28 +157,29 @@ function int render() {
 
                 let float dist = ll * initial;
 
-                let float xp = ox + xd * initial;
-                let float yp = oy + yd * initial;
-                let float zp = oz + zd * initial;
+                let Vec3d p;
+                p.x = ox + xd * initial;
+                p.y = oy + yd * initial;
+                p.z = oz + zd * initial;
 
                 if (dimLength < float(0)) {
                     if (d == 0)
-                        xp = xp - 1;
+                        p.x = p.x - 1;
                     if (d == 1)
-                        yp = yp - 1;
+                        p.y = p.y - 1;
                     if (d == 2)
-                        zp = zp - 1;
+                        p.z = p.z - 1;
                 }
 
                 while (dist < closest) {
-                    let int tex = int(map[(int(zp) & 63) << 12 | (int(yp) & 63) << 6 | (int(xp) & 63)]);
+                    let int tex = int(map[(int(p.z) & 63) << 12 | (int(p.y) & 63) << 6 | (int(p.x) & 63)]);
 
                     if (tex > 0) {
-                        let int u = int((xp + zp) * 16) & 15;
-                        let int v = (int(yp * 16) & 15) + 16;
+                        let int u = int((p.x + p.z) * 16) & 15;
+                        let int v = (int(p.y * 16) & 15) + 16;
                         if (d == 1) {
-                            u = int(xp * 16) & 15;
-                            v = (int(zp * 16) & 15);
+                            u = int(p.x * 16) & 15;
+                            v = (int(p.z * 16) & 15);
                             if (yd < float(0))
                                 v += 32;
                         }
@@ -179,9 +192,9 @@ function int render() {
                             closest = dist;
                         }
                     }
-                    xp += xd;
-                    yp += yd;
-                    zp += zd;
+                    p.x += xd;
+                    p.y += yd;
+                    p.z += zd;
                     dist += ll;
                 }
             }
@@ -212,7 +225,7 @@ function int getHeight() {
     return h;
 }
 
-function int init(int _w, int _h) {
+function int main(int _w, int _h) {
     w = _w;
     h = _h;
     pixelsLength = w * h * 4;

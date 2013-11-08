@@ -20,7 +20,7 @@ function init() {
         ref.init(w, h);
     }
     else {
-        if(minecraft.init(w, h) !== 0) {
+        if(minecraft.main(w, h) !== 0) {
             throw new Error("error initializing (probably too large screen)");
         }
     }

@@ -64,6 +64,16 @@ var w = 0;
 var h = 0;
 var f = 0;
 var pixelsLength = 0;
+  function Vec3d$Vec3d(thisPtr, x, y, z) {
+    thisPtr = thisPtr | 0;
+    x = +x;
+    y = +y;
+    z = +z;
+    var $SP = 0;
+    F8[(thisPtr) >> 3] = x;
+    F8[((thisPtr) + 8 | 0) >> 3] = y;
+    F8[((thisPtr) + 16 | 0) >> 3] = z;
+  }
 function makeTexmap() {
   var _ = 0, _$1 = 0, _$2 = 0, _$3 = 0, _$4 = 0, _$5 = 0, _$6 = 0, _$7 = 0, _$8 = 0, _$9 = 0, _$10 = 0, _$11 = 0, i = 0, br = 0.0, y = 0, x = 0, color = 0, xd = 0, yd = 0, brr = 0.0, col = 0, $SP = 0;
   for (i = 1; (i | 0) < 16; _ = i, i = (i | 0) + 1 | 0, _) {
@@ -238,7 +248,9 @@ function makeMap() {
   }
 }
 function render() {
-  var _ = 0, _$1 = 0, _$2 = 0, xRot = 0.0, yRot = 0.0, yCos = 0.0, ySin = 0.0, xCos = 0.0, xSin = 0.0, ox = 0.0, oy = 0.0, oz = 0.0, x = 0, ___xd = 0.0, y = 0, __yd = 0.0, __zd = 0.0, ___zd = 0.0, _yd = 0.0, _xd = 0.0, _zd = 0.0, col = 0, br = 0.0, ddist = 0.0, closest = 0.0, d = 0, dimLength = 0.0, ll = 0.0, xd = 0.0, yd = 0.0, zd = 0.0, initial = 0.0, dist = 0.0, xp = 0.0, yp = 0.0, zp = 0.0, tex = 0, u = 0, v = 0, cc = 0, r = 0, g = 0, b = 0, $SP = 0;
+  var _ = 0, _$1 = 0, _$2 = 0, _$3 = 0, xRot = 0.0, yRot = 0.0, yCos = 0.0, ySin = 0.0, xCos = 0.0, xSin = 0.0, ox = 0.0, oy = 0.0, oz = 0.0, x = 0, ___xd = 0.0, y = 0, __yd = 0.0, __zd = 0.0, ___zd = 0.0, _yd = 0.0, _xd = 0.0, _zd = 0.0, col = 0, br = 0.0, ddist = 0.0, closest = 0.0, d = 0, dimLength = 0.0, ll = 0.0, xd = 0.0, yd = 0.0, zd = 0.0, initial = 0.0, dist = 0.0, p = 0, tex = 0, u = 0, v = 0, cc = 0, r = 0, g = 0, b = 0, $SP = 0;
+  U4[1] = (U4[1] | 0) - 24 | 0;
+  $SP = U4[1] | 0;
   xRot = +(+(+(+sin(+(+((now() | 0) % 10000 | 0) / +(+10000) * +PI * +2)))) * 0.4 + +PI / +2);
   yRot = +(+(+(+cos(+(+((now() | 0) % 10000 | 0) / +(+10000) * +PI * +2)))) * 0.4);
   yCos = +(+cos(yRot));
@@ -280,25 +292,25 @@ function render() {
         if (+dimLength > +(+0))
           initial = +(+1 - +initial);
         dist = +(+ll * +initial);
-        xp = +(+ox + +xd * +initial);
-        yp = +(+oy + +yd * +initial);
-        zp = +(+oz + +zd * +initial);
+        F8[(($SP)) >> 3] = +ox + +xd * +initial;
+        F8[((($SP)) + 8 | 0) >> 3] = +oy + +yd * +initial;
+        F8[((($SP)) + 16 | 0) >> 3] = +oz + +zd * +initial;
         if (+dimLength < +(+0)) {
           if ((d | 0) == 0)
-            xp = +(+xp - +1);
+            F8[(($SP)) >> 3] = +F8[(($SP)) >> 3] - +1;
           if ((d | 0) == 1)
-            yp = +(+yp - +1);
+            F8[((($SP)) + 8 | 0) >> 3] = +F8[((($SP)) + 8 | 0) >> 3] - +1;
           if ((d | 0) == 2)
-            zp = +(+zp - +1);
+            F8[((($SP)) + 16 | 0) >> 3] = +F8[((($SP)) + 16 | 0) >> 3] - +1;
         }
         while (+dist < +closest) {
-          tex = I4[(((totalSize - globalSP | 0) + 64 | 0) + (((~~zp & 63) << 12 | (~~yp & 63) << 6 | ~~xp & 63) * 4 | 0)) >> 2] | 0;
+          tex = I4[(((totalSize - globalSP | 0) + 64 | 0) + (((~~+F8[((($SP)) + 16 | 0) >> 3] & 63) << 12 | (~~+F8[((($SP)) + 8 | 0) >> 3] & 63) << 6 | ~~+F8[(($SP)) >> 3] & 63) * 4 | 0)) >> 2] | 0;
           if ((tex | 0) > 0) {
-            u = ~~((+xp + +zp) * +16) & 15;
-            v = (~~(+yp * +16) & 15 | 0) + 16 | 0;
+            u = ~~((+F8[(($SP)) >> 3] + +F8[((($SP)) + 16 | 0) >> 3]) * +16) & 15;
+            v = (~~(+F8[((($SP)) + 8 | 0) >> 3] * +16) & 15 | 0) + 16 | 0;
             if ((d | 0) == 1) {
-              u = ~~(+xp * +16) & 15;
-              v = ~~(+zp * +16) & 15;
+              u = ~~(+F8[(($SP)) >> 3] * +16) & 15;
+              v = ~~(+F8[((($SP)) + 16 | 0) >> 3] * +16) & 15;
               if (+yd < +(+0))
                 v = (v | 0) + 32 | 0;
             }
@@ -310,9 +322,9 @@ function render() {
               closest = dist;
             }
           }
-          xp = +(+xp + +xd);
-          yp = +(+yp + +yd);
-          zp = +(+zp + +zd);
+          F8[(($SP)) >> 3] = F8[(($SP)) >> 3] + +xd;
+          F8[((($SP)) + 8 | 0) >> 3] = F8[((($SP)) + 8 | 0) >> 3] + +yd;
+          F8[((($SP)) + 16 | 0) >> 3] = F8[((($SP)) + 16 | 0) >> 3] + +zd;
           dist = +(+dist + +ll);
         }
       }
@@ -325,7 +337,9 @@ function render() {
       U1[(((totalSize - globalSP | 0) + 1097792 | 0) + ((imul((x | 0) + (imul(y | 0, w | 0) | 0) | 0, 4) | 0) + 3 | 0)) >> 0] = 255;
     }
   }
-  return ~~((totalSize - globalSP | 0) + 1097792 | 0) | 0;
+  return (_$3 = ~~((totalSize - globalSP | 0) + 1097792 | 0) | 0, U4[1] = (U4[1] | 0) + 24 | 0, _$3) | 0;
+  U4[1] = (U4[1] | 0) + 24;
+  return 0;
 }
 function getPixelsLength() {
   var $SP = 0;
@@ -339,10 +353,12 @@ function getHeight() {
   var $SP = 0;
   return h | 0;
 }
-function init(_w, _h) {
+function main(_w, _h) {
   _w = _w | 0;
   _h = _h | 0;
   var $SP = 0;
+  U4[1] = totalSize - 21097792;
+  U4[0] = 4;
   w = _w;
   h = _h;
   pixelsLength = imul(imul(w, h) | 0, 4) | 0;
@@ -409,7 +425,7 @@ function init(_w, _h) {
         }
     }
 
-    return { init: init,
+    return { main: main,
 render: render,
 getPixelsLength: getPixelsLength,
 getWidth: getWidth,

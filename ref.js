@@ -105,14 +105,15 @@ function clock() {
 };
 
 var f = 0;
+var rot = {};
 function render() {
-    var xRot = Math.sin(Date.now() % 10000 / 10000 * Math.PI * 2) * 0.4
-            + Math.PI / 2;
-    var yRot = Math.cos(Date.now() % 10000 / 10000 * Math.PI * 2) * 0.4;
-    var yCos = Math.cos(yRot);
-    var ySin = Math.sin(yRot);
-    var xCos = Math.cos(xRot);
-    var xSin = Math.sin(xRot);
+    rot.x = (Math.sin(Date.now() % 10000 / 10000 * Math.PI * 2) * 0.4
+             + Math.PI / 2);
+    rot.y = Math.cos(Date.now() % 10000 / 10000 * Math.PI * 2) * 0.4;
+    var yCos = Math.cos(rot.y);
+    var ySin = Math.sin(rot.y);
+    var xCos = Math.cos(rot.x);
+    var xSin = Math.sin(rot.x);
 
     var ox = 32.5 + Date.now() % 10000 / 10000 * 64;
     var oy = 32.5;
@@ -159,28 +160,30 @@ function render() {
 
                 var dist = ll * initial;
 
-                var xp = ox + xd * initial;
-                var yp = oy + yd * initial;
-                var zp = oz + zd * initial;
+                var p = { 
+                    x: ox + xd * initial,
+                    y: oy + yd * initial,
+                    z: oz + zd * initial
+                };
 
                 if (dimLength < 0) {
                     if (d == 0)
-                        xp--;
+                        p.x--;
                     if (d == 1)
-                        yp--;
+                        p.y--;
                     if (d == 2)
-                        zp--;
+                        p.z--;
                 }
 
                 while (dist < closest) {
-                    var tex = map[(zp & 63) << 12 | (yp & 63) << 6 | (xp & 63)];
+                    var tex = map[(p.z & 63) << 12 | (p.y & 63) << 6 | (p.x & 63)];
 
                     if (tex > 0) {
-                        var u = ((xp + zp) * 16) & 15;
-                        var v = ((yp * 16) & 15) + 16;
+                        var u = ((p.x + p.z) * 16) & 15;
+                        var v = ((p.y * 16) & 15) + 16;
                         if (d == 1) {
-                            u = (xp * 16) & 15;
-                            v = ((zp * 16) & 15);
+                            u = (p.x * 16) & 15;
+                            v = ((p.z * 16) & 15);
                             if (yd < 0)
                                 v += 32;
                         }
@@ -194,9 +197,9 @@ function render() {
                         }
                     }
 
-                    xp += xd;
-                    yp += yd;
-                    zp += zd;
+                    p.x += xd;
+                    p.y += yd;
+                    p.z += zd;
                     dist += ll;
                 }
                 //throw new Error(x + ' ' + y + ' ' + d + ': ' + cc);
